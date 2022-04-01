@@ -131,4 +131,16 @@ contract ERC20 {
         }
     }
 
+    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool success) {
+        assembly {
+            mstore(0, caller())
+            mstore(0x20, spender)
+            let approval := keccak256(0, 0x40) // get storage slot of approval
+            let approved := sload(approval) // load approved amount
+
+            let newApproved := add(approved, addedValue) // calculate new allowance
+            //if (eq(lt(newApproved)))
+        }
+    }
+
 }
