@@ -139,7 +139,39 @@ contract ERC20 {
             let approved := sload(approval) // load approved amount
 
             let newApproved := add(approved, addedValue) // calculate new allowance
-            //if (eq(lt(newApproved)))
+            if iszero(gt(newApproved, approved)) { revert(0, 0) } // check addition overflow
+            sstore(approval, newApproved) // write new approval amount to storage
+
+            mstore(0, newApproved) // store non-indexed approval event parameter
+            log3(
+                0, 0x20, // non-indexed parameter memory slot
+                0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, // approval event signature
+                caller(), spender // indexed event parameters
+            )
+
+            success := true // return true
+        }
+    }
+
+    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool success) {
+        assembly {
+            mstore(0, caller())
+            mstore(0x20, spender)
+            let approval := keccak256(0, 0x40) // get storage slot of approval
+            let approved := sload(approval) // load approved amount
+
+            let newApproved := sub(approved, subtractedValue) // calculate new allowance
+            if iszero(lt(newApproved, approved)) { revert(0, 0) } // check subtraction underflow
+            sstore(approval, newApproved) // write new approval amount to storage
+
+            mstore(0, newApproved) // store non-indexed approval event parameter
+            log3(
+                0, 0x20, // non-indexed parameter memory slot
+                0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, // approval event signature
+                caller(), spender // indexed event parameters
+            )
+
+            success := true // return true
         }
     }
 
