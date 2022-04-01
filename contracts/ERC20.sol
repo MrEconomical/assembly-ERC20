@@ -108,7 +108,7 @@ contract ERC20 {
         }
     }
 
-    function transferFrom(address from, address to, uint256 amount) external returns (bool success) {
+    function transferFrom(address from, address to, uint256 amount) public virtual returns (bool success) {
         assembly {
             mstore(0, from)
             mstore(0x20, to)
@@ -118,7 +118,7 @@ contract ERC20 {
             if eq(lt(approved, amount), 1) { revert(0, 0) } // check spender has enough allowance
             sstore(approval, sub(approved, amount)) // subtract spent from approval
             sstore(add(from, 0x1001), sub(sload(add(from, 0x1001)), amount)) // subtract amount from sender balance
-            sstore(add(to, 0x1001), add(sload(add(to, 0x1001), amount)) // add amount to recipient balance
+            sstore(add(to, 0x1001), add(sload(add(to, 0x1001)), amount)) // add amount to recipient balance
 
             mstore(0, amount) // store non-indexed approval event parameter
             log3(
