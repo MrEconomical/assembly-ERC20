@@ -182,6 +182,7 @@ contract ERC20 {
             let newBal := add(bal, amount) // calculate new balance
             if iszero(gt(newBal, bal)) { revert(0, 0) } // check addition overflow
             sstore(add(account, 0x1001), newBal) // write balance to storage
+            sstore(0x1000, add(sload(0x1000), amount)) // add minted to total supply
         }
         _transferEvent(address(0), account, amount);
     }
@@ -192,6 +193,7 @@ contract ERC20 {
             let newBal := sub(bal, amount) // calculate new balance
             if iszero(lt(newBal, bal)) { revert(0, 0) } // check subtraction underflow
             sstore(add(account, 0x1001), newBal) // write balance to storage
+            sstore(0x1000, sub(sload(0x1000), amount)) // subtract burned from total supply
         }
         _transferEvent(account, address(0), amount);
     }
