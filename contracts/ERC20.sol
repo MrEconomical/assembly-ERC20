@@ -141,7 +141,12 @@ contract ERC20 {
             if eq(lt(bal, amount), 1) { revert(0, 0) } // check sender has enough tokens
             sstore(add(from, 0x1001), sub(bal, amount)) // subtract amount from sender balance
             sstore(add(to, 0x1001), add(sload(add(to, 0x1001)), amount)) // add amount to recipient balance
+        }
+        _transferEvent(from, to, amount);
+    }
 
+    function _transferEvent(address from, address to, uint256 amount) internal virtual {
+        assembly {
             mstore(0, amount) // store non-indexed approval event parameter
             log3(
                 0, 0x20, // non-indexed parameter memory slot
@@ -169,6 +174,26 @@ contract ERC20 {
                 owner, spender // indexed event parameters
             )
         }
+    }
+    
+    function _mint(address account, uint256 amount) internal virtual {
+        assembly {
+            let bal := sload(add(account, 0x1001)) // load balance of recipient
+            let newBal := add(bal, amount) // calculate new balance
+            if iszero(gt(newBal, bal)) { revert(0, 0) } // check addition overflow
+            sstore(add(account, 0x1001), newBal) // write balance to storage
+        }
+        _transferEvent(address(0), account, amount);
+    }
+
+    function _burn(address account, uint256 amount) internal virtual {
+        assembly {
+            let bal := sload(add(account, 0x1001)) // load balance of recipient
+            let newBal := sub(bal, amount) // calculate new balance
+            if iszero(lt(newBal, bal)) { revert(0, 0) } // check subtraction underflow
+            sstore(add(account, 0x1001), newBal) // write balance to storage
+        }
+        _transferEvent(account, address(0), amount);
     }
 
 }
