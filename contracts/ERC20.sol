@@ -20,7 +20,7 @@ contract Token {
      */
 
     function name() external pure returns (string memory) {
-        return "Token Name";
+        return "Base Token";
     }
 
     function symbol() external pure returns (string memory) {
