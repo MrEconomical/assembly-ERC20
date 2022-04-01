@@ -113,7 +113,7 @@ contract BaseERC20 {
 
             if eq(lt(approved, amount), 1) { revert(0, 0) } // check spender has enough allowance
             sstore(approval, sub(approved, amount)) // subtract spent from approval
-            sstore(from, sub(sload(from), amount)) // subtract amount from sender
+            sstore(from, sub(sload(from), amount)) // subtract amount from sender balance
             sstore(to, add(sload(to), amount)) // add amount to recipient balance
 
             mstore(0, amount) // store non-indexed approval event parameter
