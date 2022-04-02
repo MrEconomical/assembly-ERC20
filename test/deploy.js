@@ -2,9 +2,9 @@
 
 const { ethers } = require("hardhat")
 const contracts = {
-    "TestERC20": [],
+    "TestStandard": [],
     "BaseERC20": [],
-    "contracts/ERC20.sol:ERC20": ["Token", "TOKEN"]
+    "TestERC20": []
 }
 
 for (const contract in contracts) {
